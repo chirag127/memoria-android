@@ -1,0 +1,21 @@
+*.iml
+.gradle/
+/local.properties
+/.idea/
+.DS_Store
+/build
+build/
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# secrets — never commit
+*.jks
+*.keystore
+release.jks
+keystore.properties
+*.pem
+*.key
+.env
+google-services.json

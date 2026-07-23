@@ -1,0 +1,43 @@
+name: release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: "17" }
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Decode keystore
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+        run: echo "$KEYSTORE_B64" | base64 -d > release.jks
+      - name: Build signed AAB + APK (play flavor)
+        env:
+          KS_PASS: ${{ secrets.KS_PASS }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.KEY_PASS }}
+        run: |
+          ./gradlew :app:bundlePlayRelease :app:assemblePlayRelease \
+            -Pandroid.injected.signing.store.file=$PWD/release.jks \
+            -Pandroid.injected.signing.store.password=$KS_PASS \
+            -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
+            -Pandroid.injected.signing.key.password=$KEY_PASS
+      - name: Gitleaks guard
+        uses: gitleaks/gitleaks-action@v2
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            app/build/outputs/bundle/playRelease/*.aab
+            app/build/outputs/apk/play/release/*.apk
+            app/build/outputs/mapping/playRelease/mapping.txt
+      - name: Cleanup keystore
+        if: always()
+        run: rm -f release.jks
