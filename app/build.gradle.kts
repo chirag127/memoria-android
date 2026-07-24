@@ -36,6 +36,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:common"))
     implementation(project(":data:repository"))
+    implementation(project(":data:git"))
     implementation(project(":feature:capture"))
     implementation(project(":feature:timeline"))
     implementation(project(":feature:search"))
