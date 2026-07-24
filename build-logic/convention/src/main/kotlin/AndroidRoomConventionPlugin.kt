@@ -7,10 +7,10 @@ import org.gradle.kotlin.dsl.dependencies
 class AndroidRoomConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
-            pluginManager.apply("androidx.room")
+            // Use Room via KSP only (no Room Gradle plugin) — the plugin requires a
+            // room{} schemaDirectory DSL + its own classpath dep. KSP setup is enough
+            // for the scaffold; add the Gradle plugin later if schema export is needed.
             pluginManager.apply("com.google.devtools.ksp")
-            // Room schema dir is configured via KSP arg (avoids needing the Room
-            // Gradle plugin's typed extension on the build-logic classpath).
             extensions.configure<KspExtension> {
                 arg("room.generateKotlin", "true")
                 arg("room.schemaLocation", "$projectDir/schemas")
