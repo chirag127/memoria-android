@@ -42,13 +42,16 @@ class AiEnricher(private val router: AiRouter) {
                 task = TaskKind.EXTRACT_ENTITIES,
             ),
         )
-        return result.map { parse(it.text) }.getOrElse { fallback(text) }
+        return result.map { parse(it.text) ?: fallback(text) }.getOrElse { fallback(text) }
     }
 
-    private fun parse(raw: String): Extraction {
-        val json = raw.substringAfter('{', "").let { "{$it" }.substringBeforeLast('}', "") + "}"
+    /** Returns null on unparseable output so the caller falls back to the original capture text. */
+    private fun parse(raw: String): Extraction? {
+        if (!raw.contains('{')) return null
+        val json = raw.substringAfter('{').substringBeforeLast('}').let { "{$it}" }
         return runCatching { JSON.decodeFromString(Extraction.serializer(), json) }
-            .getOrElse { fallback(raw) }
+            .getOrNull()
+            ?.takeIf { it.title.isNotBlank() }
     }
 
     private fun fallback(text: String) = Extraction(
