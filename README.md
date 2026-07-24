@@ -2,6 +2,8 @@
 
 [⭐ Star this Repo ⭐](https://github.com/chirag127/memoria-android)
 
+**[📱 Download the latest APK →](https://github.com/chirag127/memoria-android/releases/latest)** — sideload directly (enable "install unknown apps").
+
 **Memoria is a Life Memory Operating System for Android** — a personal memory, life-capture, journaling, and knowledge-extraction system that transforms your activity into an organized, searchable knowledge vault with minimal manual typing.
 
 Not a journaling app. Not a note-taking app. A life memory OS.
