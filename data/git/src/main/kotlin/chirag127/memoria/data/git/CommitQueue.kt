@@ -10,7 +10,6 @@ import javax.inject.Inject
  */
 class CommitQueue @Inject constructor(
     private val dao: PendingCommitDao,
-    private val clockMs: () -> Long = { System.currentTimeMillis() },
 ) {
     suspend fun enqueue(vaultPath: String, message: String) {
         dao.enqueue(
@@ -18,7 +17,7 @@ class CommitQueue @Inject constructor(
                 vaultPath = vaultPath,
                 message = message,
                 state = "QUEUED",
-                enqueuedEpochMs = clockMs(),
+                enqueuedEpochMs = System.currentTimeMillis(),
             ),
         )
     }
