@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Compose-driven UI; a minimal Material3 host theme keeps the splash/window
+         sane. Actual theming lives in :core:ui Compose MaterialTheme. -->
+    <style name="Theme.Memoria" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>

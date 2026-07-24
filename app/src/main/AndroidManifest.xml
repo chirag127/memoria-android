@@ -13,7 +13,7 @@
         android:label="Memoria"
         android:supportsRtl="true"
         android:usesCleartextTraffic="false"
-        android:theme="@style/Theme.Material3.DynamicColors.DayNight">
+        android:theme="@style/Theme.Memoria">
 
         <activity
             android:name=".MainActivity"
