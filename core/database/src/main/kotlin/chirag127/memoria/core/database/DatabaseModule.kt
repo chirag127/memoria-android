@@ -16,7 +16,7 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): MemoriaDatabase =
         Room.databaseBuilder(context, MemoriaDatabase::class.java, "memoria.db")
-            .fallbackToDestructiveMigration(dropAllTables = true) // cache — SoT is the git vault
+            .fallbackToDestructiveMigration() // cache — SoT is the git vault
             .build()
 
     @Provides fun provideMemoryDao(db: MemoriaDatabase): MemoryDao = db.memoryDao()

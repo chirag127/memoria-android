@@ -8,24 +8,34 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
 /**
- * Drains the commit queue and syncs to the remote vault. Network-constrained,
- * exponential backoff (scheduled by SyncScheduler). Commits are already made
- * locally at capture time; this worker only needs the network for push.
- *
- * TODO: inject CommitQueue (Room) + GitVaultEngine; drain QUEUED->COMMITTED->PUSHED.
+ * Drains the commit queue then syncs to the remote vault. Commits are made
+ * locally (offline-safe); only push needs the network. Network-constrained +
+ * exponential backoff are set by the scheduler.
  */
 @HiltWorker
 class GitSyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted params: WorkerParameters,
     private val engine: GitVaultEngine,
+    private val queue: CommitQueue,
 ) : CoroutineWorker(appContext, params) {
 
-    override suspend fun doWork(): Result = when (val r = engine.sync()) {
-        is SyncResult.Success, SyncResult.NoChanges -> Result.success()
-        is SyncResult.AuthFailed -> Result.failure() // surfaced to Settings via a separate signal
-        is SyncResult.Conflict -> Result.success()    // sidecar written; no retry needed
-        is SyncResult.Retryable -> Result.retry()
+    override suspend fun doWork(): Result {
+        val pending = queue.pending()
+        // Commit each queued item locally (safe offline).
+        pending.filter { it.state == "QUEUED" }.forEach {
+            runCatching { engine.stageAndCommit(listOf(it.vaultPath), it.message) }
+        }
+        return when (engine.sync()) {
+            is SyncResult.Success, SyncResult.NoChanges -> {
+                pending.forEach { queue.markPushed(it.id) }
+                queue.clearPushed()
+                Result.success()
+            }
+            is SyncResult.AuthFailed -> Result.failure()
+            is SyncResult.Conflict -> Result.success()
+            is SyncResult.Retryable -> Result.retry()
+        }
     }
 
     companion object {
