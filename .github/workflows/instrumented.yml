@@ -1,16 +1,16 @@
 name: instrumented
 
 on:
-  push:
-    branches: [main]
+  # No instrumented (androidTest) sources exist yet, so the emulator has nothing
+  # to run — gate to manual dispatch + an explicit PR label until they land, to
+  # avoid a failing no-op emulator job on every push (saves CI minutes).
+  workflow_dispatch:
   pull_request:
     types: [labeled]
 
-# Emulator tests are expensive; on PRs they run only when labeled `needs-emulator`
-# (keeps free-tier minutes headroom).
 jobs:
   androidTest:
-    if: github.event_name == 'push' || github.event.label.name == 'needs-emulator'
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'needs-emulator'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -20,15 +20,27 @@ jobs:
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: "17" }
       - uses: gradle/actions/setup-gradle@v4
+      - name: Skip if no instrumented tests
+        id: guard
+        run: |
+          if find . -path '*/src/androidTest/*' -name '*.kt' | grep -q .; then
+            echo "has_tests=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_tests=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::no androidTest sources — skipping emulator run"
+          fi
       - name: Enable KVM
+        if: steps.guard.outputs.has_tests == 'true'
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
       - uses: reactivecircus/android-emulator-runner@v2
+        if: steps.guard.outputs.has_tests == 'true'
         with:
           api-level: ${{ matrix.api-level }}
           arch: x86_64
           target: google_apis
           disable-animations: true
           script: ./gradlew connectedDebugAndroidTest --stacktrace
+
