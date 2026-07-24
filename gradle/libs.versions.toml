@@ -30,6 +30,8 @@ robolectric = "4.14.1"
 androidxTestExt = "1.2.1"
 espresso = "3.6.1"
 roborazzi = "1.32.2"
+ktlint = "12.1.2"
+detekt = "1.23.7"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
@@ -102,6 +104,8 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 room = { id = "androidx.room", version.ref = "room" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 
 # Memoria convention plugins (defined in build-logic)
 memoria-android-application = { id = "memoria.android.application" }
