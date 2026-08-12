@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class AiEnricherTest {
-
     /** A provider that returns canned JSON — no network. */
     private fun providerReturning(json: String) =
         object : LlmProvider {
