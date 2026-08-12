@@ -18,7 +18,7 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
       - name: Static analysis (advisory)
         run: ./gradlew ktlintCheck detekt --continue || echo "::warning::static analysis found issues (advisory, non-blocking for scaffold)"
         continue-on-error: true
