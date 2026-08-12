@@ -1,0 +1,3 @@
+# Test files — relax body expression placement rule
+**src/test/**/*.kt
+**src/androidTest/**/*.kt
