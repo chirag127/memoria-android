@@ -6,3 +6,6 @@ indent_style = space
 max_line_length = 140
 insert_final_newline = true
 trim_trailing_whitespace = true
+
+# Allow Composable functions to use PascalCase (Compose convention)
+ktlint_function_naming_exception_annotations = Composable
