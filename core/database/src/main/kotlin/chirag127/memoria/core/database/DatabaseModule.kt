@@ -14,11 +14,16 @@ import javax.inject.Singleton
 object DatabaseModule {
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): MemoriaDatabase =
+    fun provideDatabase(
+        @ApplicationContext context: Context,
+    ): MemoriaDatabase =
         Room.databaseBuilder(context, MemoriaDatabase::class.java, "memoria.db")
             .fallbackToDestructiveMigration() // cache — SoT is the git vault
             .build()
 
-    @Provides fun provideMemoryDao(db: MemoriaDatabase): MemoryDao = db.memoryDao()
-    @Provides fun providePendingCommitDao(db: MemoriaDatabase): PendingCommitDao = db.pendingCommitDao()
+    @Provides
+    fun provideMemoryDao(db: MemoriaDatabase): MemoryDao = db.memoryDao()
+
+    @Provides
+    fun providePendingCommitDao(db: MemoriaDatabase): PendingCommitDao = db.pendingCommitDao()
 }
