@@ -25,7 +25,9 @@ import javax.inject.Inject
  * The spine: raw capture → AI enrich → build Memory → write markdown to the vault
  * → enqueue commit → schedule sync. UI reads from the Room cache.
  */
-class MemoryRepositoryImpl @Inject constructor(
+class MemoryRepositoryImpl
+@Inject
+constructor(
     private val enricher: AiEnricher,
     private val dao: MemoryDao,
     private val queue: CommitQueue,
@@ -33,32 +35,34 @@ class MemoryRepositoryImpl @Inject constructor(
     private val locator: VaultLocator,
 ) : MemoryRepository {
 
-    override suspend fun capture(raw: RawCapture): Result<String> = runCatching {
-        val text = raw.text ?: raw.url ?: error("empty capture")
-        val extraction = enricher.enrich(text)
-        val now = Clock.System.now()
-        val memory = Memory(
-            id = defaultId(),
-            title = extraction.title,
-            type = extraction.type.toMemoryType(),
-            created = now,
-            modified = now,
-            tags = extraction.tags,
-            source = raw.sourceKind,
-            summary = extraction.summary.ifBlank { null },
-            body = raw.url?.let { "Source: $it\n\n$text" } ?: text,
-            entities = extraction.entities.map { Entity(it.kind, it.name, it.canonical) },
-            links = extraction.links,
-        )
+    override suspend fun capture(raw: RawCapture): Result<String> =
+        runCatching {
+            val text = raw.text ?: raw.url ?: error("empty capture")
+            val extraction = enricher.enrich(text)
+            val now = Clock.System.now()
+            val memory =
+                Memory(
+                    id = defaultId(),
+                    title = extraction.title,
+                    type = extraction.type.toMemoryType(),
+                    created = now,
+                    modified = now,
+                    tags = extraction.tags,
+                    source = raw.sourceKind,
+                    summary = extraction.summary.ifBlank { null },
+                    body = raw.url?.let { "Source: $it\n\n$text" } ?: text,
+                    entities = extraction.entities.map { Entity(it.kind, it.name, it.canonical) },
+                    links = extraction.links,
+                )
 
-        val vaultDir = locator.vaultDir() ?: appLocalFallback()
-        val relPath = VaultWriter(vaultDir).write(memory)
+            val vaultDir = locator.vaultDir() ?: appLocalFallback()
+            val relPath = VaultWriter(vaultDir).write(memory)
 
-        dao.upsert(memory.toEntity(relPath))
-        queue.enqueue(relPath, "capture: ${memory.title}")
-        scheduler.requestSync()
-        memory.id
-    }
+            dao.upsert(memory.toEntity(relPath))
+            queue.enqueue(relPath, "capture: ${memory.title}")
+            scheduler.requestSync()
+            memory.id
+        }
 
     override fun observeRecent(limit: Int): Flow<List<Memory>> =
         dao.observeRecent(limit).map { list -> list.map { it.toMemory() } }
@@ -81,25 +85,30 @@ class MemoryRepositoryImpl @Inject constructor(
 private fun String.toMemoryType(): MemoryType =
     runCatching { MemoryType.valueOf(uppercase()) }.getOrDefault(MemoryType.INBOX)
 
-private fun Memory.toEntity(vaultPath: String) = MemoryEntity(
-    id = id,
-    title = title,
-    type = type.name.lowercase(),
-    createdEpochMs = created.toEpochMilliseconds(),
-    modifiedEpochMs = modified.toEpochMilliseconds(),
-    tags = tags.joinToString(","),
-    source = source.name.lowercase(),
-    summary = summary,
-    vaultPath = vaultPath,
-)
+private fun Memory.toEntity(vaultPath: String) =
+    MemoryEntity(
+        id = id,
+        title = title,
+        type = type.name.lowercase(),
+        createdEpochMs = created.toEpochMilliseconds(),
+        modifiedEpochMs = modified.toEpochMilliseconds(),
+        tags = tags.joinToString(","),
+        source = source.name.lowercase(),
+        summary = summary,
+        vaultPath = vaultPath,
+    )
 
-private fun MemoryEntity.toMemory() = Memory(
-    id = id,
-    title = title,
-    type = runCatching { MemoryType.valueOf(type.uppercase()) }.getOrDefault(MemoryType.INBOX),
-    created = Instant.fromEpochMilliseconds(createdEpochMs),
-    modified = Instant.fromEpochMilliseconds(modifiedEpochMs),
-    tags = tags.split(",").filter { it.isNotBlank() },
-    source = runCatching { CaptureSourceKind.valueOf(source.uppercase()) }.getOrDefault(CaptureSourceKind.MANUAL),
-    summary = summary,
-)
+private fun MemoryEntity.toMemory() =
+    Memory(
+        id = id,
+        title = title,
+        type = runCatching { MemoryType.valueOf(type.uppercase()) }.getOrDefault(MemoryType.INBOX),
+        created = Instant.fromEpochMilliseconds(createdEpochMs),
+        modified = Instant.fromEpochMilliseconds(modifiedEpochMs),
+        tags = tags.split(",").filter { it.isNotBlank() },
+        source =
+            runCatching { CaptureSourceKind.valueOf(source.uppercase()) }.getOrDefault(
+                CaptureSourceKind.MANUAL,
+            ),
+        summary = summary,
+    )

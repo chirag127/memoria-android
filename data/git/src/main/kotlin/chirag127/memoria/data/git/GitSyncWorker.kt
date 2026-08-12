@@ -13,7 +13,9 @@ import dagger.assisted.AssistedInject
  * exponential backoff are set by the scheduler.
  */
 @HiltWorker
-class GitSyncWorker @AssistedInject constructor(
+class GitSyncWorker
+@AssistedInject
+constructor(
     @Assisted appContext: Context,
     @Assisted params: WorkerParameters,
     private val engine: GitVaultEngine,

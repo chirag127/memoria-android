@@ -29,19 +29,25 @@ data class ExtractedTask(val text: String, val assignee: String? = null, val due
 class AiEnricher(private val router: AiRouter) {
 
     suspend fun enrich(text: String): Extraction {
-        val prompt = buildString {
-            append("Extract structured knowledge from this capture. Respond with ONLY JSON: ")
-            append("{\"title\":str,\"type\":one of[journal,youtube,article,book,meeting,research,task,health,finance,person,company,concept,inbox],")
-            append("\"tags\":[str],\"summary\":str,\"entities\":[{\"kind\":str,\"name\":str,\"canonical\":str}],")
-            append("\"tasks\":[{\"text\":str,\"assignee\":str|null,\"due\":str|null}],\"links\":[str]}.\n\nCapture:\n")
-            append(text)
-        }
-        val result = router.complete(
-            CompletionRequest(
-                messages = listOf(Message("user", prompt)),
-                task = TaskKind.EXTRACT_ENTITIES,
-            ),
-        )
+        val prompt =
+            buildString {
+                append("Extract structured knowledge from this capture. Respond with ONLY JSON: ")
+                append("{\"title\":str,\"type\":one of")
+                append("[journal,youtube,article,book,meeting,research,task,health,finance,")
+                append("person,company,concept,inbox],")
+                append("\"tags\":[str],\"summary\":str,")
+                append("\"entities\":[{\"kind\":str,\"name\":str,\"canonical\":str}],")
+                append("\"tasks\":[{\"text\":str,\"assignee\":str|null,\"due\":str|null}],")
+                append("\"links\":[str]}.\n\nCapture:\n")
+                append(text)
+            }
+        val result =
+            router.complete(
+                CompletionRequest(
+                    messages = listOf(Message("user", prompt)),
+                    task = TaskKind.EXTRACT_ENTITIES,
+                ),
+            )
         return result.map { parse(it.text) ?: fallback(text) }.getOrElse { fallback(text) }
     }
 
@@ -54,11 +60,14 @@ class AiEnricher(private val router: AiRouter) {
             ?.takeIf { it.title.isNotBlank() }
     }
 
-    private fun fallback(text: String) = Extraction(
-        title = text.trim().lineSequence().firstOrNull()?.take(80)?.ifBlank { "Untitled capture" } ?: "Untitled capture",
-        type = "inbox",
-        summary = text.trim().take(280),
-    )
+    private fun fallback(text: String) =
+        Extraction(
+            title =
+                text.trim().lineSequence().firstOrNull()?.take(80)?.ifBlank { "Untitled capture" }
+                    ?: "Untitled capture",
+            type = "inbox",
+            summary = text.trim().take(280),
+        )
 
     private companion object {
         val JSON = Json { ignoreUnknownKeys = true; isLenient = true }

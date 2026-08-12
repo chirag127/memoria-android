@@ -14,12 +14,12 @@ import javax.inject.Singleton
  */
 @Singleton
 class KeyVaultGitAuthProvider
-    @Inject
-    constructor(
-        private val keyVault: KeyVault,
-    ) : GitAuthProvider {
-        override fun token(): String? = keyVault.get(KeyVault.ALIAS_GITHUB_PAT)
-    }
+@Inject
+constructor(
+    private val keyVault: KeyVault,
+) : GitAuthProvider {
+    override fun token(): String? = keyVault.get(KeyVault.ALIAS_GITHUB_PAT)
+}
 
 @Module
 @InstallIn(SingletonComponent::class)

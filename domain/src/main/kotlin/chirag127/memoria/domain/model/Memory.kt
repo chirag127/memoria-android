@@ -3,7 +3,21 @@ package chirag127.memoria.domain.model
 import kotlinx.datetime.Instant
 
 /** Kind of a captured memory — drives vault folder + note type. */
-enum class MemoryType { JOURNAL, YOUTUBE, ARTICLE, BOOK, MEETING, RESEARCH, TASK, HEALTH, FINANCE, PERSON, COMPANY, CONCEPT, INBOX }
+enum class MemoryType {
+    JOURNAL,
+    YOUTUBE,
+    ARTICLE,
+    BOOK,
+    MEETING,
+    RESEARCH,
+    TASK,
+    HEALTH,
+    FINANCE,
+    PERSON,
+    COMPANY,
+    CONCEPT,
+    INBOX,
+}
 
 /** Where a capture originated. */
 enum class CaptureSourceKind { VOICE, MANUAL, SHARE, YOUTUBE, WEB, CALENDAR, IMPORT, PHOTO }

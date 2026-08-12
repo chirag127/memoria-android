@@ -25,42 +25,46 @@ class OpenAiCompatProvider(
     private val clockMs: () -> Long,
 ) : LlmProvider {
 
-    override fun supports(task: TaskKind): Boolean = when (task) {
-        TaskKind.TRANSCRIBE -> Modality.AUDIO_TRANSCRIBE in config.caps
-        TaskKind.EMBED -> Modality.EMBEDDING in config.caps
-        else -> Modality.TEXT in config.caps
-    }
+    override fun supports(task: TaskKind): Boolean =
+        when (task) {
+            TaskKind.TRANSCRIBE -> Modality.AUDIO_TRANSCRIBE in config.caps
+            TaskKind.EMBED -> Modality.EMBEDDING in config.caps
+            else -> Modality.TEXT in config.caps
+        }
 
-    override suspend fun complete(req: CompletionRequest): Result<CompletionResponse> = runCatching {
-        val start = clockMs()
-        val url = config.baseUrl.trimEnd('/') + "/chat/completions"
-        val payload = OaiRequest(
-            model = req.model ?: config.defaultModel,
-            messages = req.messages.map { OaiMessage(it.role, it.content) },
-            temperature = req.temperature,
-            maxTokens = req.maxTokens,
-        )
-        val resp = http.post(url) {
-            contentType(ContentType.Application.Json)
-            headers {
-                config.apiKeyAlias?.let { alias ->
-                    val key = keyLookup(alias) ?: error("missing key for ${config.id}")
-                    append(HttpHeaders.Authorization, "Bearer $key")
+    override suspend fun complete(req: CompletionRequest): Result<CompletionResponse> =
+        runCatching {
+            val start = clockMs()
+            val url = config.baseUrl.trimEnd('/') + "/chat/completions"
+            val payload =
+                OaiRequest(
+                    model = req.model ?: config.defaultModel,
+                    messages = req.messages.map { OaiMessage(it.role, it.content) },
+                    temperature = req.temperature,
+                    maxTokens = req.maxTokens,
+                )
+            val resp =
+                http.post(url) {
+                    contentType(ContentType.Application.Json)
+                    headers {
+                        config.apiKeyAlias?.let { alias ->
+                            val key = keyLookup(alias) ?: error("missing key for ${config.id}")
+                            append(HttpHeaders.Authorization, "Bearer $key")
+                        }
+                    }
+                    setBody(JSON.encodeToString(OaiRequest.serializer(), payload))
                 }
+            if (!resp.status.isSuccess()) {
+                error("${config.id} HTTP ${resp.status.value}: ${resp.bodyAsText().take(200)}")
             }
-            setBody(JSON.encodeToString(OaiRequest.serializer(), payload))
+            val parsed = JSON.decodeFromString(OaiResponse.serializer(), resp.bodyAsText())
+            CompletionResponse(
+                text = parsed.choices.firstOrNull()?.message?.content.orEmpty(),
+                model = parsed.model ?: payload.model,
+                provider = config.id,
+                latencyMs = clockMs() - start,
+            )
         }
-        if (!resp.status.isSuccess()) {
-            error("${config.id} HTTP ${resp.status.value}: ${resp.bodyAsText().take(200)}")
-        }
-        val parsed = JSON.decodeFromString(OaiResponse.serializer(), resp.bodyAsText())
-        CompletionResponse(
-            text = parsed.choices.firstOrNull()?.message?.content.orEmpty(),
-            model = parsed.model ?: payload.model,
-            provider = config.id,
-            latencyMs = clockMs() - start,
-        )
-    }
 
     private companion object {
         val JSON = Json { ignoreUnknownKeys = true; encodeDefaults = false }

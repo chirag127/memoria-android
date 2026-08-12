@@ -13,17 +13,18 @@ import java.io.File
 
 class VaultWriterTest {
 
-    private fun sample() = Memory(
-        id = "20260724T0914-a3f9",
-        title = "Rust Ownership Explained",
-        type = MemoryType.YOUTUBE,
-        created = Instant.parse("2026-07-24T09:14:03Z"),
-        modified = Instant.parse("2026-07-24T09:14:03Z"),
-        tags = listOf("learning/rust"),
-        source = CaptureSourceKind.YOUTUBE,
-        summary = "Ownership makes memory safety compile-time.",
-        entities = listOf(Entity("concept", "ownership", "Rust Ownership")),
-    )
+    private fun sample() =
+        Memory(
+            id = "20260724T0914-a3f9",
+            title = "Rust Ownership Explained",
+            type = MemoryType.YOUTUBE,
+            created = Instant.parse("2026-07-24T09:14:03Z"),
+            modified = Instant.parse("2026-07-24T09:14:03Z"),
+            tags = listOf("learning/rust"),
+            source = CaptureSourceKind.YOUTUBE,
+            summary = "Ownership makes memory safety compile-time.",
+            entities = listOf(Entity("concept", "ownership", "Rust Ownership")),
+        )
 
     @Test
     fun `routes youtube capture to date-sharded learning folder`() {

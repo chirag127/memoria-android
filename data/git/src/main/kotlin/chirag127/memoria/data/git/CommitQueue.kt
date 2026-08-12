@@ -8,7 +8,9 @@ import javax.inject.Inject
  * Durable queue of pending vault commits (Room-backed, survives process death).
  * Capture enqueues; GitSyncWorker drains.
  */
-class CommitQueue @Inject constructor(
+class CommitQueue
+@Inject
+constructor(
     private val dao: PendingCommitDao,
 ) {
     suspend fun enqueue(vaultPath: String, message: String) {
@@ -23,6 +25,8 @@ class CommitQueue @Inject constructor(
     }
 
     suspend fun pending(): List<PendingCommitEntity> = dao.pending()
+
     suspend fun markPushed(id: Long) = dao.setState(id, "PUSHED")
+
     suspend fun clearPushed() = dao.clearPushed()
 }

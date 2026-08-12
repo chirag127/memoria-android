@@ -9,10 +9,13 @@ import javax.inject.Singleton
 
 /** Resolves the vault working directory from settings; null until the user picks one. */
 @Singleton
-class VaultLocator @Inject constructor(
+class VaultLocator
+@Inject
+constructor(
     private val settings: SettingsStore,
 ) {
-    fun vaultDir(): File? = runBlocking { settings.vaultPath.first() }?.let { File(it) }?.takeIf { it.isDirectory }
+    fun vaultDir(): File? =
+        runBlocking { settings.vaultPath.first() }?.let { File(it) }?.takeIf { it.isDirectory }
 }
 
 /**

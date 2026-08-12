@@ -19,14 +19,15 @@ object AiModule {
     @Provides
     @Singleton
     fun provideRouter(http: HttpClient, keyVault: KeyVault): AiRouter {
-        val providers = ProviderConfig.DEFAULTS.map { cfg ->
-            OpenAiCompatProvider(
-                config = cfg,
-                http = http,
-                keyLookup = { alias -> keyVault.get(alias) },
-                clockMs = { System.currentTimeMillis() },
-            )
-        }
+        val providers =
+            ProviderConfig.DEFAULTS.map { cfg ->
+                OpenAiCompatProvider(
+                    config = cfg,
+                    http = http,
+                    keyLookup = { alias -> keyVault.get(alias) },
+                    clockMs = { System.currentTimeMillis() },
+                )
+            }
         return AiRouter(providers)
     }
 

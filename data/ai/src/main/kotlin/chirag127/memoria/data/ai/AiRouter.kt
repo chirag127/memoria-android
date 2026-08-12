@@ -13,9 +13,13 @@ class AiRouter(private val providers: List<LlmProvider>) {
     fun chainFor(req: CompletionRequest): List<LlmProvider> {
         val eligible = providers.filter { it.config.enabled && it.supports(req.task) }
         return if (req.preferQuality) {
-            eligible.sortedWith(compareByDescending<LlmProvider> { it.config.tier.ordinal }.thenBy { it.config.priority })
+            eligible.sortedWith(
+                compareByDescending<LlmProvider> { it.config.tier.ordinal }.thenBy { it.config.priority },
+            )
         } else {
-            eligible.sortedWith(compareBy<LlmProvider> { it.config.tier.ordinal }.thenBy { it.config.priority })
+            eligible.sortedWith(
+                compareBy<LlmProvider> { it.config.tier.ordinal }.thenBy { it.config.priority },
+            )
         }
     }
 

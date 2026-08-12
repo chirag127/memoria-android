@@ -21,7 +21,9 @@ data class CaptureUiState(
 )
 
 @HiltViewModel
-class CaptureViewModel @Inject constructor(
+class CaptureViewModel
+@Inject
+constructor(
     private val repository: MemoryRepository,
 ) : ViewModel() {
 
@@ -35,9 +37,12 @@ class CaptureViewModel @Inject constructor(
         if (text.isEmpty()) return
         _state.update { it.copy(saving = true, error = null) }
         viewModelScope.launch {
-            repository.capture(RawCapture(text = text, sourceKind = source))
+            repository
+                .capture(RawCapture(text = text, sourceKind = source))
                 .onSuccess { id -> _state.update { CaptureUiState(lastSavedId = id) } }
-                .onFailure { e -> _state.update { it.copy(saving = false, error = e.message ?: "capture failed") } }
+                .onFailure { e ->
+                    _state.update { it.copy(saving = false, error = e.message ?: "capture failed") }
+                }
         }
     }
 }
