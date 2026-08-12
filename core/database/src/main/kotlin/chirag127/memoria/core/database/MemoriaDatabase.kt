@@ -20,7 +20,9 @@ interface MemoryDao {
     suspend fun get(id: String): MemoryEntity?
 
     @Query(
-        "SELECT * FROM memory WHERE title LIKE '%' || :q || '%' OR summary LIKE '%' || :q || '%' ORDER BY createdEpochMs DESC LIMIT :limit",
+        "SELECT * FROM memory WHERE title LIKE '%' || :q || '%'" +
+            " OR summary LIKE '%' || :q || '%'" +
+            " ORDER BY createdEpochMs DESC LIMIT :limit",
     )
     suspend fun search(q: String, limit: Int): List<MemoryEntity>
 }

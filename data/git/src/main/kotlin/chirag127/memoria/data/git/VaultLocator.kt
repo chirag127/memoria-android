@@ -11,9 +11,7 @@ import javax.inject.Singleton
 @Singleton
 class VaultLocator
 @Inject
-constructor(
-    private val settings: SettingsStore,
-) {
+constructor(private val settings: SettingsStore) {
     fun vaultDir(): File? =
         runBlocking { settings.vaultPath.first() }?.let { File(it) }?.takeIf { it.isDirectory }
 }
