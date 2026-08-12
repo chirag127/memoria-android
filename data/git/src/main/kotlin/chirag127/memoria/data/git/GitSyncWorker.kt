@@ -14,33 +14,32 @@ import dagger.assisted.AssistedInject
  */
 @HiltWorker
 class GitSyncWorker
-@AssistedInject
-constructor(
-    @Assisted appContext: Context,
-    @Assisted params: WorkerParameters,
-    private val engine: GitVaultEngine,
-    private val queue: CommitQueue,
-) : CoroutineWorker(appContext, params) {
-
-    override suspend fun doWork(): Result {
-        val pending = queue.pending()
-        // Commit each queued item locally (safe offline).
-        pending.filter { it.state == "QUEUED" }.forEach {
-            runCatching { engine.stageAndCommit(listOf(it.vaultPath), it.message) }
-        }
-        return when (engine.sync()) {
-            is SyncResult.Success, SyncResult.NoChanges -> {
-                pending.forEach { queue.markPushed(it.id) }
-                queue.clearPushed()
-                Result.success()
+    @AssistedInject
+    constructor(
+        @Assisted appContext: Context,
+        @Assisted params: WorkerParameters,
+        private val engine: GitVaultEngine,
+        private val queue: CommitQueue,
+    ) : CoroutineWorker(appContext, params) {
+        override suspend fun doWork(): Result {
+            val pending = queue.pending()
+            // Commit each queued item locally (safe offline).
+            pending.filter { it.state == "QUEUED" }.forEach {
+                runCatching { engine.stageAndCommit(listOf(it.vaultPath), it.message) }
             }
-            is SyncResult.AuthFailed -> Result.failure()
-            is SyncResult.Conflict -> Result.success()
-            is SyncResult.Retryable -> Result.retry()
+            return when (engine.sync()) {
+                is SyncResult.Success, SyncResult.NoChanges -> {
+                    pending.forEach { queue.markPushed(it.id) }
+                    queue.clearPushed()
+                    Result.success()
+                }
+                is SyncResult.AuthFailed -> Result.failure()
+                is SyncResult.Conflict -> Result.success()
+                is SyncResult.Retryable -> Result.retry()
+            }
+        }
+
+        companion object {
+            const val UNIQUE_WORK = "memoria-git-sync"
         }
     }
-
-    companion object {
-        const val UNIQUE_WORK = "memoria-git-sync"
-    }
-}
