@@ -14,7 +14,9 @@ import javax.inject.Singleton
 object DatabaseModule {
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): MemoriaDatabase =
+    fun provideDatabase(
+        @ApplicationContext context: Context,
+    ): MemoriaDatabase =
         Room.databaseBuilder(context, MemoriaDatabase::class.java, "memoria.db")
             .fallbackToDestructiveMigration() // cache — SoT is the git vault
             .build()
