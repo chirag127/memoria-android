@@ -12,8 +12,7 @@ import javax.inject.Singleton
 class VaultLocator
     @Inject
     constructor(private val settings: SettingsStore) {
-        fun vaultDir(): File? =
-            runBlocking { settings.vaultPath.first() }?.let { File(it) }?.takeIf { it.isDirectory }
+        fun vaultDir(): File? = runBlocking { settings.vaultPath.first() }?.let { File(it) }?.takeIf { it.isDirectory }
     }
 
 /**
@@ -25,14 +24,11 @@ class LazyGitVaultEngine(
     private val locator: VaultLocator,
     private val auth: GitAuthProvider,
 ) : GitVaultEngine {
-
-    private fun engine(): GitVaultEngine? =
-        locator.vaultDir()?.let { JGitVaultEngine(it, auth) }
+    private fun engine(): GitVaultEngine? = locator.vaultDir()?.let { JGitVaultEngine(it, auth) }
 
     override fun stageAndCommit(relativePaths: List<String>, message: String) {
         engine()?.stageAndCommit(relativePaths, message)
     }
 
-    override fun sync(): SyncResult =
-        engine()?.sync() ?: SyncResult.AuthFailed("vault not configured — pick a vault folder in Settings")
+    override fun sync(): SyncResult = engine()?.sync() ?: SyncResult.AuthFailed("vault not configured — pick a vault folder in Settings")
 }

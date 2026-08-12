@@ -9,7 +9,6 @@ package chirag127.memoria.data.ai
  * RouteLog for cost/latency-aware ordering + daily budget cap.
  */
 class AiRouter(private val providers: List<LlmProvider>) {
-
     fun chainFor(req: CompletionRequest): List<LlmProvider> {
         val eligible = providers.filter { it.config.enabled && it.supports(req.task) }
         return if (req.preferQuality) {

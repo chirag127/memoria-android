@@ -1,7 +1,6 @@
 package chirag127.memoria.data.ai
 
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -24,7 +23,6 @@ class OpenAiCompatProvider(
     private val keyLookup: (alias: String) -> String?,
     private val clockMs: () -> Long,
 ) : LlmProvider {
-
     override fun supports(task: TaskKind): Boolean =
         when (task) {
             TaskKind.TRANSCRIBE -> Modality.AUDIO_TRANSCRIBE in config.caps
@@ -67,7 +65,10 @@ class OpenAiCompatProvider(
         }
 
     private companion object {
-        val JSON = Json { ignoreUnknownKeys = true; encodeDefaults = false }
+        val JSON = Json {
+            ignoreUnknownKeys = true
+            encodeDefaults = false
+        }
     }
 }
 

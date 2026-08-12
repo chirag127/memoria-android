@@ -23,7 +23,6 @@ class JGitVaultEngine(
     private val vaultRoot: File,
     private val auth: GitAuthProvider,
 ) : GitVaultEngine {
-
     private fun open(): Git = Git.open(vaultRoot)
 
     override fun stageAndCommit(relativePaths: List<String>, message: String) {

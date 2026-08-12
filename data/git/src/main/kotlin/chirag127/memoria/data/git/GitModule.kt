@@ -33,8 +33,6 @@ object GitModule {
      */
     @Provides
     @Singleton
-    fun provideGitVaultEngine(
-        locator: VaultLocator,
-        auth: GitAuthProvider,
-    ): GitVaultEngine = LazyGitVaultEngine(locator, auth)
+    fun provideGitVaultEngine(locator: VaultLocator, auth: GitAuthProvider): GitVaultEngine =
+        LazyGitVaultEngine(locator, auth)
 }

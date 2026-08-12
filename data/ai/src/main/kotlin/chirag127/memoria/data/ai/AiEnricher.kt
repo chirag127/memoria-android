@@ -27,7 +27,6 @@ data class ExtractedTask(val text: String, val assignee: String? = null, val due
  * returns unparseable JSON — capture is never lost.
  */
 class AiEnricher(private val router: AiRouter) {
-
     suspend fun enrich(text: String): Extraction {
         val prompt =
             buildString {
@@ -70,6 +69,9 @@ class AiEnricher(private val router: AiRouter) {
         )
 
     private companion object {
-        val JSON = Json { ignoreUnknownKeys = true; isLenient = true }
+        val JSON = Json {
+            ignoreUnknownKeys = true
+            isLenient = true
+        }
     }
 }
