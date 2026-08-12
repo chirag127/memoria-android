@@ -19,8 +19,13 @@ interface MemoryDao {
     @Query("SELECT * FROM memory WHERE id = :id")
     suspend fun get(id: String): MemoryEntity?
 
-    @Query("SELECT * FROM memory WHERE title LIKE '%' || :q || '%' OR summary LIKE '%' || :q || '%' ORDER BY createdEpochMs DESC LIMIT :limit")
-    suspend fun search(q: String, limit: Int): List<MemoryEntity>
+    @Query(
+        "SELECT * FROM memory WHERE title LIKE '%' || :q || '%' OR summary LIKE '%' || :q || '%' ORDER BY createdEpochMs DESC LIMIT :limit",
+    )
+    suspend fun search(
+        q: String,
+        limit: Int,
+    ): List<MemoryEntity>
 }
 
 @Dao
@@ -32,7 +37,10 @@ interface PendingCommitDao {
     suspend fun pending(): List<PendingCommitEntity>
 
     @Query("UPDATE pending_commit SET state = :state WHERE id = :id")
-    suspend fun setState(id: Long, state: String)
+    suspend fun setState(
+        id: Long,
+        state: String,
+    )
 
     @Query("DELETE FROM pending_commit WHERE state = 'PUSHED'")
     suspend fun clearPushed()
@@ -45,5 +53,6 @@ interface PendingCommitDao {
 )
 abstract class MemoriaDatabase : RoomDatabase() {
     abstract fun memoryDao(): MemoryDao
+
     abstract fun pendingCommitDao(): PendingCommitDao
 }
