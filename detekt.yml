@@ -1,0 +1,5 @@
+naming:
+  PackageNaming:
+    active: true
+    # Allow digits in package components (e.g. chirag127.*)
+    packagePattern: '[a-z0-9]+(\.[a-z0-9][a-zA-Z0-9]*)*'
