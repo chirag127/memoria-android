@@ -3,3 +3,23 @@ naming:
     active: true
     # Allow digits in package components (e.g. chirag127.*)
     packagePattern: '[a-z0-9]+(\.[a-z0-9][a-zA-Z0-9]*)*'
+
+style:
+  MaxLineLength:
+    active: true
+    maxLineLength: 140
+    excludeCommentStatements: true
+
+potential-bugs:
+  TooGenericExceptionCaught:
+    active: false  # Necessary for broad error handling in git operations
+
+comments:
+  ForbiddenComment:
+    active: false  # TODOs are valid roadmap markers in active development
+
+complexity:
+  MagicNumber:
+    active: false  # Numeric constants without named constants are acceptable in initial implementation
+  ReturnCount:
+    active: false  # Multiple return paths acceptable for readability
