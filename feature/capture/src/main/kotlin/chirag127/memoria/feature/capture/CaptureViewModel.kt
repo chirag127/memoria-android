@@ -22,25 +22,24 @@ data class CaptureUiState(
 
 @HiltViewModel
 class CaptureViewModel
-@Inject
-constructor(private val repository: MemoryRepository) : ViewModel() {
+    @Inject
+    constructor(private val repository: MemoryRepository) : ViewModel() {
+        private val _state = MutableStateFlow(CaptureUiState())
+        val state: StateFlow<CaptureUiState> = _state.asStateFlow()
 
-    private val _state = MutableStateFlow(CaptureUiState())
-    val state: StateFlow<CaptureUiState> = _state.asStateFlow()
+        fun onTextChange(text: String) = _state.update { it.copy(text = text, error = null) }
 
-    fun onTextChange(text: String) = _state.update { it.copy(text = text, error = null) }
-
-    fun save(source: CaptureSourceKind = CaptureSourceKind.MANUAL) {
-        val text = _state.value.text.trim()
-        if (text.isEmpty()) return
-        _state.update { it.copy(saving = true, error = null) }
-        viewModelScope.launch {
-            repository
-                .capture(RawCapture(text = text, sourceKind = source))
-                .onSuccess { id -> _state.update { CaptureUiState(lastSavedId = id) } }
-                .onFailure { e ->
-                    _state.update { it.copy(saving = false, error = e.message ?: "capture failed") }
-                }
+        fun save(source: CaptureSourceKind = CaptureSourceKind.MANUAL) {
+            val text = _state.value.text.trim()
+            if (text.isEmpty()) return
+            _state.update { it.copy(saving = true, error = null) }
+            viewModelScope.launch {
+                repository
+                    .capture(RawCapture(text = text, sourceKind = source))
+                    .onSuccess { id -> _state.update { CaptureUiState(lastSavedId = id) } }
+                    .onFailure { e ->
+                        _state.update { it.copy(saving = false, error = e.message ?: "capture failed") }
+                    }
+            }
         }
     }
-}
