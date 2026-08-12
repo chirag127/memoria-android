@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
@@ -12,11 +13,13 @@ import javax.inject.Singleton
  * user configures a token in Settings (sync then reports AuthFailed).
  */
 @Singleton
-class KeyVaultGitAuthProvider @javax.inject.Inject constructor(
-    private val keyVault: KeyVault,
-) : GitAuthProvider {
-    override fun token(): String? = keyVault.get(KeyVault.ALIAS_GITHUB_PAT)
-}
+class KeyVaultGitAuthProvider
+    @Inject
+    constructor(
+        private val keyVault: KeyVault,
+    ) : GitAuthProvider {
+        override fun token(): String? = keyVault.get(KeyVault.ALIAS_GITHUB_PAT)
+    }
 
 @Module
 @InstallIn(SingletonComponent::class)
