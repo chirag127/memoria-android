@@ -15,7 +15,9 @@ import javax.inject.Singleton
 @Singleton
 class KeyVault
     @Inject
-    constructor(@ApplicationContext context: Context) {
+    constructor(
+        @ApplicationContext context: Context,
+    ) {
         private val prefs by lazy {
             val masterKey =
                 MasterKey.Builder(context)

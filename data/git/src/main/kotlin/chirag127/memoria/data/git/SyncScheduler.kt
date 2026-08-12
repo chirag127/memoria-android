@@ -16,7 +16,9 @@ import javax.inject.Singleton
 @Singleton
 class SyncScheduler
     @Inject
-    constructor(@ApplicationContext private val context: Context) {
+    constructor(
+        @ApplicationContext private val context: Context,
+    ) {
         fun requestSync() {
             val work =
                 OneTimeWorkRequestBuilder<GitSyncWorker>()
