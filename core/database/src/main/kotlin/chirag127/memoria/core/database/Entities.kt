@@ -11,10 +11,12 @@ data class MemoryEntity(
     val type: String,
     val createdEpochMs: Long,
     val modifiedEpochMs: Long,
-    val tags: String,        // comma-joined
+    // comma-joined
+    val tags: String,
     val source: String,
     val summary: String?,
-    val vaultPath: String,   // relative path in the vault
+    // relative path in the vault
+    val vaultPath: String,
 )
 
 /** A pending git commit, survives process death; drained by GitSyncWorker. */
@@ -23,6 +25,7 @@ data class PendingCommitEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val vaultPath: String,
     val message: String,
-    val state: String,       // QUEUED | COMMITTED | PUSHED
+    // QUEUED | COMMITTED | PUSHED
+    val state: String,
     val enqueuedEpochMs: Long,
 )
