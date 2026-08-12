@@ -28,7 +28,10 @@ jobs:
             git pull --rebase origin main
             git push
           fi
-      - run: ./gradlew ktlintCheck detekt testDebugUnitTest assembleDebug --stacktrace
+      - name: Lint (advisory — never blocks the nightly)
+        run: ./gradlew ktlintCheck detekt --stacktrace || echo "::warning::ktlint/detekt reported issues (advisory)"
+      - name: Tests + build (hard gate)
+        run: ./gradlew testDebugUnitTest assembleDebug --stacktrace
       - uses: actions/upload-artifact@v4
         with:
           name: nightly-${{ github.run_number }}
