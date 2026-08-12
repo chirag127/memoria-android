@@ -7,9 +7,9 @@ max_line_length = 140
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-# Allow @Inject on same line as constructor
-ktlint_standard_annotation = disabled
-# Allow single-expression functions on same line as = 
+# Do not force multiline when params + body fit on one line
+ktlint_function_signature_rule_force_multiline_when_parameter_count_greater_or_equal_than = 4
+# Allow @Inject constructor on same class line
+ktlint_class_signature_rule_force_multiline_when_parameter_count_greater_or_equal_than = 4
+# Allow single-expression property getters on same line (val x get() = ...)
 ktlint_standard_multiline-expression-wrapping = disabled
-# Allow function params on single line when they fit
-ktlint_standard_function-signature = disabled
