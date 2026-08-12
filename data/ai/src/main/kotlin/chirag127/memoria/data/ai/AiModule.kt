@@ -18,7 +18,10 @@ object AiModule {
 
     @Provides
     @Singleton
-    fun provideRouter(http: HttpClient, keyVault: KeyVault): AiRouter {
+    fun provideRouter(
+        http: HttpClient,
+        keyVault: KeyVault,
+    ): AiRouter {
         val providers =
             ProviderConfig.DEFAULTS.map { cfg ->
                 OpenAiCompatProvider(

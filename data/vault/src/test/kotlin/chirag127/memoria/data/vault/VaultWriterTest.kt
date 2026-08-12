@@ -12,7 +12,6 @@ import org.junit.jupiter.api.io.TempDir
 import java.io.File
 
 class VaultWriterTest {
-
     private fun sample() =
         Memory(
             id = "20260724T0914-a3f9",
@@ -33,7 +32,9 @@ class VaultWriterTest {
     }
 
     @Test
-    fun `writes markdown with frontmatter and wikilink entity`(@TempDir dir: File) {
+    fun `writes markdown with frontmatter and wikilink entity`(
+        @TempDir dir: File,
+    ) {
         val rel = VaultWriter(dir).write(sample())
         val written = File(dir, rel).readText()
         assertTrue(written.startsWith("---"), "has frontmatter")

@@ -65,10 +65,11 @@ class OpenAiCompatProvider(
         }
 
     private companion object {
-        val JSON = Json {
-            ignoreUnknownKeys = true
-            encodeDefaults = false
-        }
+        val JSON =
+            Json {
+                ignoreUnknownKeys = true
+                encodeDefaults = false
+            }
     }
 }
 

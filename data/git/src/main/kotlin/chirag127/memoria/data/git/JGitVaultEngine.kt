@@ -25,7 +25,10 @@ class JGitVaultEngine(
 ) : GitVaultEngine {
     private fun open(): Git = Git.open(vaultRoot)
 
-    override fun stageAndCommit(relativePaths: List<String>, message: String) {
+    override fun stageAndCommit(
+        relativePaths: List<String>,
+        message: String,
+    ) {
         open().use { git ->
             relativePaths.forEach { git.add().addFilepattern(it).call() }
             git.commit().setMessage(message).setSign(false).call()

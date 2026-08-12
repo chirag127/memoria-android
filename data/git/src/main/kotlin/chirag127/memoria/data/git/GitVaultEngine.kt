@@ -18,7 +18,10 @@ sealed interface SyncResult {
  * All calls are blocking/IO — callers dispatch on IO / run inside a Worker.
  */
 interface GitVaultEngine {
-    fun stageAndCommit(relativePaths: List<String>, message: String)
+    fun stageAndCommit(
+        relativePaths: List<String>,
+        message: String,
+    )
 
     /** Pull (rebase) then push. Token resolved from Keystore by the impl. */
     fun sync(): SyncResult

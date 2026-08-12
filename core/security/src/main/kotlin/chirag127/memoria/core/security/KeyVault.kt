@@ -34,7 +34,10 @@ class KeyVault
 
         fun get(alias: String): String? = prefs.getString(alias, null)
 
-        fun put(alias: String, value: String) = prefs.edit().putString(alias, value).apply()
+        fun put(
+            alias: String,
+            value: String,
+        ) = prefs.edit().putString(alias, value).apply()
 
         fun remove(alias: String) = prefs.edit().remove(alias).apply()
 

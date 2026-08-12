@@ -69,9 +69,10 @@ class AiEnricher(private val router: AiRouter) {
         )
 
     private companion object {
-        val JSON = Json {
-            ignoreUnknownKeys = true
-            isLenient = true
-        }
+        val JSON =
+            Json {
+                ignoreUnknownKeys = true
+                isLenient = true
+            }
     }
 }

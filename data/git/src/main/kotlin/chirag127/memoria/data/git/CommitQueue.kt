@@ -11,7 +11,10 @@ import javax.inject.Inject
 class CommitQueue
     @Inject
     constructor(private val dao: PendingCommitDao) {
-        suspend fun enqueue(vaultPath: String, message: String) {
+        suspend fun enqueue(
+            vaultPath: String,
+            message: String,
+        ) {
             dao.enqueue(
                 PendingCommitEntity(
                     vaultPath = vaultPath,

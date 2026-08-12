@@ -28,5 +28,8 @@ interface MemoryRepository {
 
 /** Full-text + (later) semantic search over the cached vault index. */
 interface SearchRepository {
-    suspend fun search(query: String, limit: Int = 50): List<Memory>
+    suspend fun search(
+        query: String,
+        limit: Int = 50,
+    ): List<Memory>
 }

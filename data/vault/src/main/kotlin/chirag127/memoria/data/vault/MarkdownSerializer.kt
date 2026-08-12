@@ -38,7 +38,11 @@ class MarkdownSerializer {
             appendLine("status: active")
             appendLine("---")
             appendLine()
-            memory.summary?.let { appendLine("## Summary"); appendLine(it); appendLine() }
+            memory.summary?.let {
+                appendLine("## Summary")
+                appendLine(it)
+                appendLine()
+            }
             if (memory.body.isNotBlank()) appendLine(memory.body)
             if (memory.actionItems.isNotEmpty()) {
                 appendLine()
@@ -47,6 +51,5 @@ class MarkdownSerializer {
             }
         }
 
-    private fun yaml(v: String): String =
-        if (v.any { it in ":#[]{}\",'" }) "\"${v.replace("\"", "\\\"")}\"" else v
+    private fun yaml(v: String): String = if (v.any { it in ":#[]{}\",'" }) "\"${v.replace("\"", "\\\"")}\"" else v
 }

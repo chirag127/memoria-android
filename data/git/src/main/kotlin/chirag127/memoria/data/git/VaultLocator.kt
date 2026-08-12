@@ -26,7 +26,10 @@ class LazyGitVaultEngine(
 ) : GitVaultEngine {
     private fun engine(): GitVaultEngine? = locator.vaultDir()?.let { JGitVaultEngine(it, auth) }
 
-    override fun stageAndCommit(relativePaths: List<String>, message: String) {
+    override fun stageAndCommit(
+        relativePaths: List<String>,
+        message: String,
+    ) {
         engine()?.stageAndCommit(relativePaths, message)
     }
 
