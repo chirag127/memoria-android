@@ -32,7 +32,7 @@ jobs:
             -Pandroid.injected.signing.key.password=$KEY_PASS
       - name: Gitleaks guard
         uses: gitleaks/gitleaks-action@v2
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           files: |
             app/build/outputs/bundle/playRelease/*.aab
