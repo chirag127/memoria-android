@@ -19,7 +19,9 @@ private val Context.dataStore by preferencesDataStore(name = "memoria_settings")
 @Singleton
 class SettingsStore
     @Inject
-    constructor(@ApplicationContext private val context: Context) {
+    constructor(
+        @ApplicationContext private val context: Context,
+    ) {
         val vaultPath: Flow<String?> = context.dataStore.data.map { it[KEY_VAULT_PATH] }
 
         val remoteUrl: Flow<String?> = context.dataStore.data.map { it[KEY_REMOTE_URL] }
