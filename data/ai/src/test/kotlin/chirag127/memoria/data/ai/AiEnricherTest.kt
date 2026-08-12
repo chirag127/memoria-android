@@ -23,8 +23,7 @@ class AiEnricherTest {
 
             override fun supports(task: TaskKind) = true
 
-            override suspend fun complete(req: CompletionRequest) =
-                Result.success(CompletionResponse(json, "m", "fake", 1))
+            override suspend fun complete(req: CompletionRequest) = Result.success(CompletionResponse(json, "m", "fake", 1))
         }
 
     @Test
@@ -70,8 +69,7 @@ class AiEnricherTest {
 
                     override fun supports(task: TaskKind) = true
 
-                    override suspend fun complete(req: CompletionRequest) =
-                        Result.failure<CompletionResponse>(RuntimeException("boom"))
+                    override suspend fun complete(req: CompletionRequest) = Result.failure<CompletionResponse>(RuntimeException("boom"))
                 }
             val out = AiEnricher(AiRouter(listOf(failing))).enrich("Meeting notes")
             assertTrue(out.title.isNotBlank())
